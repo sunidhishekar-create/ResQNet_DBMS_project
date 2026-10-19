@@ -5,15 +5,15 @@ erDiagram
     USERS ||--o{ EMERGENCY_REQUEST : submits
     USERS ||--o{ RESOURCE_ALLOCATION : performs
     USERS ||--o{ AUDIT_LOG : causes
-    DISASTER ||--o{ INCIDENT : "has"
-    LOCATION ||--o{ INCIDENT : "occurs at"
-    LOCATION ||--o{ RESOURCE : "stationed at"
+    DISASTER ||--o{ INCIDENT : has
+    LOCATION ||--o{ INCIDENT : occurs_at
+    LOCATION ||--o{ RESOURCE : stationed_at
     RESOURCE_TYPE ||--o{ RESOURCE : classifies
-    RESOURCE_TYPE ||--o{ EMERGENCY_REQUEST : "is requested as"
+    RESOURCE_TYPE ||--o{ EMERGENCY_REQUEST : requested_as
     INCIDENT ||--o{ EMERGENCY_REQUEST : generates
-    EMERGENCY_REQUEST ||--o{ RESOURCE_ALLOCATION : "is served by"
-    RESOURCE ||--o{ RESOURCE_ALLOCATION : "is used in"
-    EMERGENCY_REQUEST ||--o| REQUEST_EMBEDDING : "has"
+    EMERGENCY_REQUEST ||--o{ RESOURCE_ALLOCATION : served_by
+    RESOURCE ||--o{ RESOURCE_ALLOCATION : used_in
+    EMERGENCY_REQUEST ||--o| REQUEST_EMBEDDING : has
 
     USERS {
         int user_id PK
@@ -92,21 +92,22 @@ erDiagram
         string table_name
         int record_id
         string action
-        json old_value
-        json new_value
+        string old_value
+        string new_value
         int changed_by FK
         timestamp changed_at
     }
     REQUEST_EMBEDDING {
-        int request_id PK, FK
-        vector embedding "384 dimensions"
+        int request_id PK
+        string embedding
         string model_name
         timestamp created_at
     }
 ```
 
 ## Key design points
+
 - **EMERGENCY_REQUEST and RESOURCE are M:N**, resolved by RESOURCE_ALLOCATION, which carries its own attributes (quantity, distance, score, status, timestamps).
 - **Priority score** (severity, affected people, resource urgency weight, waiting time) belongs to the request. **Match score** (distance, availability) belongs to a request-resource pair, so distance lives on the allocation.
-- **REQUEST_EMBEDDING** is 1:1 and optional with its request, with `ON DELETE CASCADE`. It holds the pgvector data.
-- **AUDIT_LOG** deliberately has no FK to the audited tables, so history survives deletions.
+- **REQUEST_EMBEDDING** is a 1:1 optional child of the request (its `request_id` is both PK and FK), with `ON DELETE CASCADE`. The `embedding` column is a pgvector `vector(384)`, shown as text here because Mermaid has no vector type.
+- **AUDIT_LOG** deliberately has no FK to the audited tables, so history survives deletions. `old_value` and `new_value` are JSONB in the real schema.
