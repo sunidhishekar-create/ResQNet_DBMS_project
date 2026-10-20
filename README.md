@@ -251,3 +251,7 @@ Invoke-RestMethod -Uri http://localhost:3000/api/auth/login -Method Post -Body $
    `EXPLAIN ANALYZE` before and after for the queue query and save screenshots in
 
 Phase 1 is on main (tag handoff-1). Start with the README: setup steps, demo logins, API reference and your Phase 2 task list. Then read docs/04_implementation_and_testing.md, which explains everything done so far and lists all the tests. You’ll need Docker Desktop, Node 20+, Git and VS Code. Run docker compose up -d, then set up app/.env.local as the README says, and run node tests\phase1_api_tests.mjs to confirm it all works on your machine before you start. Use your own git identity so the commits show your contribution.
+
+ You are also responsible for all screenshots, including the Phase 1 ones. The checklist
+   with file names and commands is in section 9 of docs/04_implementation_and_testing.md.
+   (please add these in the final doccument)
